@@ -20,13 +20,13 @@ impl Pen {
       angle: angle,
       style: style,
       parts: Vec::new(),
-      next: Data::new(),
+      next: Data::new().move_to((0.0, 0.0)),
     }
   }
 
   pub fn by(mut self, angle: f64, distance: f64) -> Self {
     let x = distance * angle.cos();
-    let y = distance * angle.sin();
+    let y = distance * angle.sin() * -1.0;
     let n = self.next.clone();
 
     self.parts.push(

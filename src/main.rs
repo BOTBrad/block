@@ -17,7 +17,7 @@ fn main() {
       .set("fill", "none")
       .set("stroke", "black")
   ).by(PI * 0.25, 10.0)
-    .by(PI * 1.5, 100.0);
+    .by(PI * 0.75, 10.0);
 
   let mut document = Document::new()
     .set("viewBox", (-100, -100, 200, 200));
