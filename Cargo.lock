@@ -1,0 +1,14 @@
+[[package]]
+name = "block"
+version = "0.1.0"
+dependencies = [
+ "svg 0.5.10 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "svg"
+version = "0.5.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[metadata]
+"checksum svg 0.5.10 (registry+https://github.com/rust-lang/crates.io-index)" = "5ce4450d6982b758228fa5407db2fc27cefccb013c170ade23c03ec3a643bb72"

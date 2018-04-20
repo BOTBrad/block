@@ -1,0 +1,7 @@
+[package]
+name = "block"
+version = "0.1.0"
+authors = ["BOT Brad <i@hate.coffee>"]
+
+[dependencies]
+svg = "0.5.10"
