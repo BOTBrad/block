@@ -27,11 +27,13 @@ impl Pen {
   pub fn by(mut self, angle: f64, distance: f64) -> Self {
     let x = distance * angle.cos();
     let y = distance * angle.sin() * -1.0;
+    let x_w = self.width * self.angle.cos() * angle.cos();
+    let y_w = self.height * self.angle.sin() * angle.sin();
     let n = self.next.clone();
 
     self.parts.push(
       self.style.clone()
-        .set("stroke-width", self.width * self.angle.cos() + self.height * self.angle.sin())
+        .set("stroke-width", y_w + x_w)
         .set("d", n.clone().line_by((x, y)))
     );
 
