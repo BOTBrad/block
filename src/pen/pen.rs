@@ -1,6 +1,9 @@
+use matrix::prelude::*;
 use std::vec::Vec;
 use svg::node::element::Path;
 use svg::node::element::path::Data;
+
+use mathelp;
 
 pub struct Pen {
   width: f64,
@@ -9,7 +12,7 @@ pub struct Pen {
   style: Path,
 
   parts: Vec<Path>,
-  next: Data,
+  center: Conventional<f64>,
 }
 
 impl Pen {
@@ -20,12 +23,13 @@ impl Pen {
       angle: angle,
       style: style,
       parts: Vec::new(),
-      next: Data::new().move_to((0.0, 0.0)),
+      center: Conventional::from_vec((3, 1), matrix![0.0; 0.0; 1.0;]),
     }
   }
 
   pub fn by(mut self, angle: f64, distance: f64) -> Self {
-    let x = distance * angle.cos();
+
+    /*let x = distance * angle.cos();
     let y = distance * angle.sin() * -1.0;
     let x_w = self.width * self.angle.cos() * angle.cos();
     let y_w = self.height * self.angle.sin() * angle.sin();
@@ -37,7 +41,7 @@ impl Pen {
         .set("d", n.clone().line_by((x, y)))
     );
 
-    self.next = n.clone().move_by((x, y));
+    self.next = n.clone().move_by((x, y));*/
 
     self
   }

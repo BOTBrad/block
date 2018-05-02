@@ -1,5 +1,8 @@
+#[macro_use]
+extern crate matrix;
 extern crate svg;
 
+mod mathelp;
 mod pen;
 
 use std::f64::consts::PI;

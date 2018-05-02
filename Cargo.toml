@@ -5,3 +5,4 @@ authors = ["BOT Brad <i@hate.coffee>"]
 
 [dependencies]
 svg = "0.5.10"
+matrix = "0.21.12"
