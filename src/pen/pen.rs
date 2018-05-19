@@ -1,4 +1,5 @@
 use matrix::prelude::*;
+use std::f64::consts::PI;
 use std::vec::Vec;
 use svg::node::element::Path;
 use svg::node::element::path::Data;
@@ -23,25 +24,35 @@ impl Pen {
       angle: angle,
       style: style,
       parts: Vec::new(),
-      center: Conventional::from_vec((3, 1), matrix![0.0; 0.0; 1.0;]),
+      center: Conventional::from_vec((1, 3), matrix![
+                                     0.0;
+                                     0.0;
+                                     1.0;]),
     }
   }
 
   pub fn by(mut self, angle: f64, distance: f64) -> Self {
-
-    /*let x = distance * angle.cos();
-    let y = distance * angle.sin() * -1.0;
-    let x_w = self.width * self.angle.cos() * angle.cos();
-    let y_w = self.height * self.angle.sin() * angle.sin();
-    let n = self.next.clone();
+    let orth = angle + PI*0.5;
+    let mut pts = vec![
+      mathelp::trans(self.width*0.5, orth).multiply(&self.center),
+      mathelp::trans(-self.width*0.5, orth).multiply(&self.center),
+    ];
+    let t = mathelp::trans(distance, angle);
+    let p2 = t.multiply(&pts[1]);
+    let p3 = t.multiply(&pts[0]);
+    pts.push(p2);
+    pts.push(p3);
 
     self.parts.push(
       self.style.clone()
-        .set("stroke-width", y_w + x_w)
-        .set("d", n.clone().line_by((x, y)))
+        .set("stroke-width", 1.0)
+        .set("d", Data::new()
+          .move_to((pts[0][(0, 0)], pts[0][(1, 0)]))
+          .line_to((pts[1][(0, 0)], pts[1][(1, 0)]))
+          .line_to((pts[2][(0, 0)], pts[2][(1, 0)]))
+          .line_to((pts[3][(0, 0)], pts[3][(1, 0)]))
+        )
     );
-
-    self.next = n.clone().move_by((x, y));*/
 
     self
   }
