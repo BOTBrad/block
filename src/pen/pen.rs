@@ -1,10 +1,9 @@
-use matrix::prelude::*;
 use std::f64::consts::PI;
 use std::vec::Vec;
 use svg::node::element::Path;
 use svg::node::element::path::Data;
 
-use mathelp;
+use point::Point;
 
 pub struct Pen {
   width: f64,
@@ -13,7 +12,7 @@ pub struct Pen {
   style: Path,
 
   parts: Vec<Path>,
-  center: Conventional<f64>,
+  center: Point,
 }
 
 impl Pen {
@@ -24,37 +23,51 @@ impl Pen {
       angle: angle,
       style: style,
       parts: Vec::new(),
-      center: Conventional::from_vec((1, 3), matrix![
-                                     0.0;
-                                     0.0;
-                                     1.0;]),
+      center: Point::new(0.0, 0.0),
     }
   }
 
   pub fn by(mut self, angle: f64, distance: f64) -> Self {
-    let orth = angle + PI*0.5;
-    let mut pts = vec![
-      mathelp::trans(self.width*0.5, orth).multiply(&self.center),
-      mathelp::trans(-self.width*0.5, orth).multiply(&self.center),
-    ];
-    let t = mathelp::trans(distance, angle);
-    let p2 = t.multiply(&pts[1]);
-    let p3 = t.multiply(&pts[0]);
-    pts.push(p2);
-    pts.push(p3);
+    let stroke = Point::from_dist_angle(distance, angle);
+    let mut parts_vec = self.get_starting_pairs();
 
-    self.parts.push(
-      self.style.clone()
-        .set("stroke-width", 1.0)
-        .set("d", Data::new()
-          .move_to((pts[0][(0, 0)], pts[0][(1, 0)]))
-          .line_to((pts[1][(0, 0)], pts[1][(1, 0)]))
-          .line_to((pts[2][(0, 0)], pts[2][(1, 0)]))
-          .line_to((pts[3][(0, 0)], pts[3][(1, 0)]))
-        )
-    );
+    for part in &mut parts_vec {
+      let p2 = part[1] + stroke;
+      let p3 = part[0] + stroke;
 
+      part.push(p2);
+      part.push(p3);
+    }
+
+    for p in parts_vec {
+      self.parts.push(
+        self.style.clone()
+          .set("fill", "black")
+          .set("stroke", "none")
+          .set("d", Data::new()
+            .move_to(p[0].pair())
+            .line_to(p[1].pair())
+            .line_to(p[2].pair())
+            .line_to(p[3].pair())
+          )
+      );
+    }
+
+    self.center = self.center + stroke;
     self
+  }
+
+  fn get_starting_pairs(&self) -> Vec<Vec<Point>> {
+    let brush_w = Point::from_dist_angle(self.width, self.angle);
+    let brush_h = Point::from_dist_angle(self.height, self.angle + 0.5 * PI);
+    let c = self.center;
+
+    vec![
+      vec![c + brush_w + brush_h, c - brush_w + brush_h],
+      vec![c + brush_w - brush_h, c - brush_w - brush_h],
+      vec![c + brush_w + brush_h, c + brush_w - brush_h],
+      vec![c - brush_w + brush_h, c - brush_w - brush_h],
+    ]
   }
 
   pub fn done(self) -> Vec<Path> {

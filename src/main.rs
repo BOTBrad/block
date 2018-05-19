@@ -1,9 +1,7 @@
-#[macro_use]
-extern crate matrix;
 extern crate svg;
 
-mod mathelp;
 mod pen;
+mod point;
 
 use std::f64::consts::PI;
 use svg::Document;
