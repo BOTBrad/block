@@ -7,23 +7,30 @@ use std::f64::consts::PI;
 use svg::Document;
 use svg::node::element::Path;
 
-use pen::Pen;
+use pen::{Pen, Writer};
 
 fn main() {
-  let p = Pen::new(
-    5.0,
-    1.0,
-    0.15,
+  let mut writer = Writer::new(Pen::new(
+    10.0,
+    2.0,
+    -PI/6.0,
     Path::new()
       .set("fill", "none")
       .set("stroke", "black")
-  ).by(PI * 0.25, 10.0)
-    .by(PI * 0.75, 10.0);
+  ));
+
+  writer
+    .lozenge()
+    .vertical()
+    .lozenge()
+    .arch()
+    .half_vertical()
+    .lozenge();
 
   let mut document = Document::new()
     .set("viewBox", (-100, -100, 200, 200));
 
-  for path in p.done() {
+  for path in writer.done() {
     document = document.add(path);
   }
 

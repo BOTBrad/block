@@ -27,7 +27,7 @@ impl Pen {
     }
   }
 
-  pub fn by(mut self, angle: f64, distance: f64) -> Self {
+  pub fn by(&mut self, distance: f64, angle: f64) -> &mut Self {
     let stroke = Point::from_dist_angle(distance, angle);
     let mut parts_vec = self.get_starting_pairs();
 
@@ -53,13 +53,19 @@ impl Pen {
       );
     }
 
-    self.center = self.center + stroke;
+    self.move_by(distance, angle)
+  }
+
+  pub fn move_by(&mut self, distance: f64, angle: f64) -> &mut Self {
+    let offset = Point::from_dist_angle(distance, angle);
+    self.center = self.center + offset;
+
     self
   }
 
   fn get_starting_pairs(&self) -> Vec<Vec<Point>> {
-    let brush_w = Point::from_dist_angle(self.width, self.angle);
-    let brush_h = Point::from_dist_angle(self.height, self.angle + 0.5 * PI);
+    let brush_w = Point::from_dist_angle(self.width/2.0, self.angle);
+    let brush_h = Point::from_dist_angle(self.height/2.0, self.angle + 0.5 * PI);
     let c = self.center;
 
     vec![
