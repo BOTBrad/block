@@ -19,7 +19,7 @@ impl Writer {
   }
 
   pub fn lozenge(&mut self) -> &mut Self {
-    let loz_len = 12.0;
+    let loz_len = 10.0;
     let loz_ang = PI/4.0;
     self.pen
       .move_by(-loz_len/2.0, loz_ang)
@@ -46,8 +46,8 @@ impl Writer {
   pub fn arch(&mut self) -> &mut Self {
     self.pen
       .move_by(0.5 * self.vertical_len, -0.5 * PI)
-      .by(0.25 * self.vertical_len, -0.25 * PI)
-      .by(0.25 * self.vertical_len, 0.25 * PI);
+      .by(self.vertical_len/4.0, -PI/4.0)
+      .by(self.vertical_len/4.0,  PI/4.0);
 
     self
   }
