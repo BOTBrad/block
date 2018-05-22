@@ -118,7 +118,9 @@ fn thickness_rotate(pts: Vec<Point>, angle: f64) -> (f64, f64) {
     panic!();
   }
 
-  let mut max = f64::MIN;
+  (-1.0, 1.0)
+
+  /*let mut max = f64::MIN;
   let mut min = f64::MIN;
 
   for pt in pts {
@@ -133,6 +135,6 @@ fn thickness_rotate(pts: Vec<Point>, angle: f64) -> (f64, f64) {
     }
   }
 
-  (max, min)
+  (max, min)*/
 }
 
