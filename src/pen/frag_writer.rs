@@ -1,3 +1,4 @@
+use std::f64;
 use std::f64::consts::PI;
 use std::vec::Vec;
 
@@ -11,7 +12,8 @@ pub struct FragWriter {
   width: f64,
   height: f64,
 
-  path: Vec<(f64, f64)>,
+  left: Vec<(f64, f64)>,
+  right: Vec<(f64, f64)>,
 }
 
 impl FragWriter {
@@ -20,7 +22,8 @@ impl FragWriter {
       width: width,
       height: height,
 
-      path: Vec::new(),
+      left: Vec::new(),
+      right: Vec::new(),
     }
   }
 
@@ -63,7 +66,30 @@ impl FragWriter {
   }
 
   fn add_seg(&mut self, off: (f64, f64)) {
-    self.path.push(off);
+    let (d, a) = off;
+    let pt = Point::new(d, a);
+    let (left, right) = self.thickness_offset(a);
+    self.left.push((pt + left).pair());
+    self.right.push((pt + right).pair());
+  }
+
+  fn thickness_offset(&self, angle: f64) -> (Point, Point) {
+    let orth = angle - PI / 2.0;
+
+    let (max, min) = thickness_rotate(
+      vec![
+        Point::new(self.width, self.height),
+        Point::new(self.width, -self.height),
+        Point::new(-self.width, self.height),
+        Point::new(-self.width, -self.height),
+      ],
+      -angle,
+    );
+
+    (
+      Point::from_dist_angle(max, orth),
+      Point::from_dist_angle(min, orth),
+    )
   }
 
   pub fn to_data(self) -> Data {
@@ -71,7 +97,14 @@ impl FragWriter {
     let mut center = Point::new(0.0, 0.0);
     data = data.move_to(center.pair());
 
-    for (dist, angle) in self.path {
+    for (dist, angle) in self.left {
+      center = center + Point::from_dist_angle(dist, angle);
+      data = data.line_to(center.pair());
+    }
+
+    center = Point::new(0.0, 0.0);
+    data = data.move_to(center.pair());
+    for (dist, angle) in self.right {
       center = center + Point::from_dist_angle(dist, angle);
       data = data.line_to(center.pair());
     }
@@ -79,3 +112,27 @@ impl FragWriter {
     data
   }
 }
+
+fn thickness_rotate(pts: Vec<Point>, angle: f64) -> (f64, f64) {
+  if pts.len() == 0 {
+    panic!();
+  }
+
+  let mut max = f64::MIN;
+  let mut min = f64::MIN;
+
+  for pt in pts {
+    let p = pt.rotate_by(angle);
+
+    if p.y > max {
+      max = p.y;
+    }
+
+    if p.y < min {
+      min = p.y;
+    }
+  }
+
+  (max, min)
+}
+

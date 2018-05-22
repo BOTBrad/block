@@ -2,8 +2,8 @@ use std::ops;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Point {
-  x: f64,
-  y: f64,
+  pub x: f64,
+  pub y: f64,
 }
 
 impl Point {
@@ -23,6 +23,13 @@ impl Point {
 
   pub fn pair(self) -> (f64, f64) {
     (self.x, self.y)
+  }
+
+  pub fn rotate_by(self, angle: f64) -> Self {
+    Point{
+      x: self.x * angle.cos() - self.y * angle.sin(),
+      y: self.x * angle.sin() + self.y * angle.cos(),
+    }
   }
 }
 
@@ -44,6 +51,17 @@ impl ops::Sub for Point {
     Point{
       x: self.x - other.x,
       y: self.y - other.y,
+    }
+  }
+}
+
+impl ops::Neg for Point {
+  type Output = Point;
+
+  fn neg(self) -> Self {
+    Point{
+      x: -self.x,
+      y: -self.y,
     }
   }
 }

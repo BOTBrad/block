@@ -36,7 +36,7 @@ fn main() {
     .lozenge();*/
 
   let mut document = Document::new()
-    .set("viewBox", (-100, -100, 200, 200))
+    .set("viewBox", (-100, -100, 500, 500))
     .add(p);
 
   /*for path in writer.done() {
