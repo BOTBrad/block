@@ -1,5 +1,6 @@
 extern crate svg;
 
+mod blockl;
 mod pen;
 mod point;
 
@@ -7,10 +8,17 @@ use std::f64::consts::PI;
 use svg::Document;
 use svg::node::element::Path;
 
-use pen::{Pen, Writer};
+use blockl::Fragment as F;
+use pen::{FragWriter, Pen, Writer};
 
 fn main() {
-  let mut writer = Writer::new(Pen::new(
+  let mut fw = FragWriter::new(10.0, 10.0);
+  fw.write(vec![F::Start, F::Descendor, F::Vertical, F::Descendor, F::End]);
+  let mut p = Path::new()
+    .set("fill", "none")
+    .set("stroke", "black")
+    .set("d", fw.to_data());
+  /*let mut writer = Writer::new(Pen::new(
     10.0,
     2.0,
     -PI/6.0,
@@ -25,14 +33,15 @@ fn main() {
     .lozenge()
     .arch()
     .half_vertical()
-    .lozenge();
+    .lozenge();*/
 
   let mut document = Document::new()
-    .set("viewBox", (-100, -100, 200, 200));
+    .set("viewBox", (-100, -100, 200, 200))
+    .add(p);
 
-  for path in writer.done() {
+  /*for path in writer.done() {
     document = document.add(path);
-  }
+  }*/
 
   svg::save("image.svg", &document).unwrap();
 }
