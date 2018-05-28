@@ -12,8 +12,9 @@ pub struct FragWriter {
   width: f64,
   height: f64,
 
-  left: Vec<(f64, f64)>,
-  right: Vec<(f64, f64)>,
+  center: Point,
+  left: Vec<Point>,
+  right: Vec<Point>,
 }
 
 impl FragWriter {
@@ -22,6 +23,7 @@ impl FragWriter {
       width: width,
       height: height,
 
+      center: Point::new(0.0, 0.0),
       left: Vec::new(),
       right: Vec::new(),
     }
@@ -67,10 +69,12 @@ impl FragWriter {
 
   fn add_seg(&mut self, off: (f64, f64)) {
     let (d, a) = off;
-    let pt = Point::new(d, a);
+    self.center = self.center + Point::from_dist_angle(d, a);
+    let pt = self.center;
+    println!("{:?}", pt);
     let (left, right) = self.thickness_offset(a);
-    self.left.push((pt + left).pair());
-    self.right.push((pt + right).pair());
+    self.left.push(pt + left);
+    self.right.push(pt + right);
   }
 
   fn thickness_offset(&self, angle: f64) -> (Point, Point) {
@@ -87,26 +91,21 @@ impl FragWriter {
     );
 
     (
-      Point::from_dist_angle(max, orth),
-      Point::from_dist_angle(min, orth),
+      Point::from_dist_angle(max * 5.0, orth),
+      Point::from_dist_angle(min * 5.0, orth),
     )
   }
 
   pub fn to_data(self) -> Data {
     let mut data = Data::new();
-    let mut center = Point::new(0.0, 0.0);
-    data = data.move_to(center.pair());
-
-    for (dist, angle) in self.left {
-      center = center + Point::from_dist_angle(dist, angle);
-      data = data.line_to(center.pair());
+    data = data.move_to((0.0, 0.0));
+    for pt in self.left {
+      data = data.line_to(pt.pair());
     }
 
-    center = Point::new(0.0, 0.0);
-    data = data.move_to(center.pair());
-    for (dist, angle) in self.right {
-      center = center + Point::from_dist_angle(dist, angle);
-      data = data.line_to(center.pair());
+    data = data.move_to((0.0, 0.0));
+    for pt in self.right {
+      data = data.line_to(pt.pair());
     }
 
     data
