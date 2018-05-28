@@ -13,6 +13,7 @@ pub struct FragWriter {
   height: f64,
 
   center: Point,
+  path: Vec<Point>,
   left: Vec<Point>,
   right: Vec<Point>,
 }
@@ -24,6 +25,7 @@ impl FragWriter {
       height: height,
 
       center: Point::new(0.0, 0.0),
+      path: Vec::new(),
       left: Vec::new(),
       right: Vec::new(),
     }
@@ -33,9 +35,9 @@ impl FragWriter {
     for i in 0..frags.len()-1 {
       let c = &frags[i];
       let n = &frags[i+1];
-      let (f, _) = self.get_segments(c, n);
+      let (f, s) = self.get_segments(c, n);
 
-      self.add_seg(f);
+      self.add_seg(f, s);
     }
 
     self
@@ -67,20 +69,21 @@ impl FragWriter {
     }
   }
 
-  fn add_seg(&mut self, off: (f64, f64)) {
+  fn add_seg(&mut self, off: (f64, f64), next: (f64, f64)) {
     let (d, a) = off;
+    let (_, a2) = next;
     self.center = self.center + Point::from_dist_angle(d, a);
     let pt = self.center;
     println!("{:?}", pt);
-    let (left, right) = self.thickness_offset(a);
+    let (left, right) = self.thickness_offset(a, a2);
     self.left.push(pt + left);
     self.right.push(pt + right);
   }
 
-  fn thickness_offset(&self, angle: f64) -> (Point, Point) {
-    let orth = angle - PI / 2.0;
+  fn thickness_offset(&self, a1: f64, a2: f64) -> (Point, Point) {
+    let orth = ((a1 + a2) - PI) / 2.0;
 
-    let (max, min) = thickness_rotate(
+    /*let (max, min) = thickness_rotate(
       vec![
         Point::new(self.width, self.height),
         Point::new(self.width, -self.height),
@@ -88,11 +91,11 @@ impl FragWriter {
         Point::new(-self.width, -self.height),
       ],
       -angle,
-    );
+    );*/
 
     (
-      Point::from_dist_angle(max * 5.0, orth),
-      Point::from_dist_angle(min * 5.0, orth),
+      Point::from_dist_angle(5.0, orth),
+      Point::from_dist_angle(-5.0, orth),
     )
   }
 
