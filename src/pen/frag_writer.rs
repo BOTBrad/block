@@ -45,12 +45,12 @@ impl FragWriter {
 
   fn get_segments(&self, f1: &Fragment, f2: &Fragment) -> ((f64, f64), (f64, f64)) {
     match (self.get_frag(f1), self.get_frag(f2)) {
-      (None, Some(b)) =>
-        (b, b),
+      (None, Some((bd, ba))) =>
+        ((0.0, ba), (bd, ba)),
       (Some(a), Some(b)) =>
         (a, b),
-      (Some(a), None) =>
-        (a, a),
+      (Some((ad, aa)), None) =>
+        ((ad, aa), (0.0, aa)),
       _ =>
         unreachable!(),
     }
